@@ -8,9 +8,12 @@ import java.math.BigDecimal;
 public class ClientResponse {
 
     private Long id;
-    private String nom;
-    private String prenom;
-    private String email; // Information de l'entité User associée
+    private String nom_complet;
+
+    // Association User
+    private Long userId;
+    private String email;
+
     private CustomerTier tier;
     private Integer totalOrders;
     private BigDecimal totalSpent;

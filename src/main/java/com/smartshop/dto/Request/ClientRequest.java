@@ -1,18 +1,21 @@
 package com.smartshop.dto.Request;
 
+import com.smartshop.entities.Enums.CustomerTier;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class ClientRequest {
 
-    @NotBlank(message = "Le nom est obligatoire.")
-    private String nom;
+    // Nom complet du client, correspond au champ 'nom_complet' de l'entité Client
+    @NotBlank(message = "Le nom complet est obligatoire.")
+    private String nom_complet;
 
-    @NotBlank(message = "Le prénom est obligatoire.")
-    private String prenom;
+    // Identifiant de l'utilisateur associé (relation OneToOne obligatoire)
+    @NotNull(message = "L'utilisateur lié (userId) est obligatoire.")
+    private Long userId;
 
-    // Le 'tier' est géré par la logique métier, souvent pas mis à jour par le client.
-    // Si c'est une mise à jour manuelle par un Admin, il faudrait l'ajouter ici:
-    // private CustomerTier tier;
+    // Optionnel: permet à un admin de fixer le tier manuellement. Sinon, géré par la logique métier.
+    private CustomerTier tier;
 }

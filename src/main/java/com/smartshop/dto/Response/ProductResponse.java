@@ -9,5 +9,6 @@ public class ProductResponse {
     private Long id;
     private String nom;
     private BigDecimal prixUnitaire;
-    private String description;
+    private Integer stockDisponible;
+    private Boolean isDeleted;
 }

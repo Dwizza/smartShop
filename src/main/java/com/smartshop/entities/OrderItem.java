@@ -24,9 +24,6 @@ public class OrderItem {
     @Min(value = 1, message = "La quantité doit être au moins 1.")
     private Integer quantite;
 
-    @NotNull(message = "Le prix unitaire est obligatoire.")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Le prix unitaire doit être positif.")
-    private BigDecimal prixUnitaire;
 
     @NotNull(message = "Le total de la ligne est obligatoire.")
     @DecimalMin(value = "0.0", message = "Le total de la ligne ne peut être négatif.")

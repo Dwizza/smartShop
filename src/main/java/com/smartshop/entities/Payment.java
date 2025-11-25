@@ -1,5 +1,6 @@
 package com.smartshop.entities;
 
+import com.smartshop.entities.Enums.PaymentMethod;
 import com.smartshop.entities.Enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -38,7 +39,9 @@ public class Payment {
     @NotNull(message = "Le statut de paiement est obligatoire.")
     private PaymentStatus statut;
 
-    private String reference;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Le mode de paiement est obligatoire.")
+    private PaymentMethod methode;
 
     @OneToOne
     @MapsId

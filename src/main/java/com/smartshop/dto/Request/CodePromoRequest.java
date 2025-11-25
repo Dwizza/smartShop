@@ -1,28 +1,16 @@
-package com.smartshop.entities;
+package com.smartshop.dto.Request;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 
-@Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "code_promo")
-public class CodePromo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CodePromoRequest {
 
     @NotBlank(message = "Le code promo est obligatoire.")
-    @Column(unique = true)
     private String code;
 
     @NotNull(message = "Le pourcentage de remise est obligatoire.")
@@ -36,3 +24,4 @@ public class CodePromo {
     @NotNull(message = "Le statut d'utilisation est obligatoire.")
     private Boolean used;
 }
+

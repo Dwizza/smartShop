@@ -22,13 +22,13 @@ public class User {
     @Column(unique = true)
     private String username;
 
-    @NotBlank(message = "Le mot de passe est obligatoire.")
-    private String password;
-
     @NotBlank(message = "L'email est obligatoire.")
     @Email(message = "Format d'email invalide.")
     @Column(unique = true)
     private String email;
+
+    @NotBlank(message = "Le mot de passe est obligatoire.")
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

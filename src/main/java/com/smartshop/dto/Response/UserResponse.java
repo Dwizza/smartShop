@@ -9,5 +9,5 @@ public class UserResponse {
     private Long id;
     private String username;
     private String email;
-    private UserRole role; // ADMIN_CLIENT, CLIENT
+    private UserRole userRole;
 }
