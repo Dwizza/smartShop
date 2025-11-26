@@ -1,11 +1,14 @@
 package com.smartshop.mapper;
 
-import com.smartshop.dto.Request.CodePromoRequest;
-import com.smartshop.dto.Response.CodePromoResponse;
-import com.smartshop.entities.CodePromo;
+import com.smartshop.dto.request.CodePromoRequest;
+import com.smartshop.dto.response.CodePromoResponse;
+import com.smartshop.entity.CodePromo;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
 public interface CodePromoMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -15,4 +18,3 @@ public interface CodePromoMapper {
 
     void updateEntity(@MappingTarget CodePromo entity, CodePromoRequest request);
 }
-
