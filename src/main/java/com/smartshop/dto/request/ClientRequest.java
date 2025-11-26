@@ -3,18 +3,25 @@ package com.smartshop.dto.request;
 import com.smartshop.entity.enums.CustomerTier;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientRequest {
+    @NotBlank
+    private String username;
 
-    @NotBlank(message = "Le nom complet est obligatoire.")
-    private String nom_complet;
+    @NotBlank
+    private String password;
 
-    @NotNull(message = "L'utilisateur lié (userId) est obligatoire.")
-    private Long userId;
+    @NotBlank
+    private String nom;
 
-    private CustomerTier tier;
+    @NotBlank
+    private String email;
 }
+

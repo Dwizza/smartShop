@@ -1,6 +1,5 @@
 package com.smartshop.controller;
 
-import com.smartshop.dto.request.ClientRegisterRequest;
 import com.smartshop.dto.request.LoginRequest;
 import com.smartshop.entity.User;
 import com.smartshop.service.AuthService;
@@ -17,7 +16,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest dto, HttpSession session) {
+    public ResponseEntity<String> AuthLogin(@RequestBody LoginRequest dto, HttpSession session) {
 
         User user = authService.login(dto);
         session.setAttribute("user", user);
@@ -26,15 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpSession session) {
+    public ResponseEntity<String> AuthLogout(HttpSession session) {
         authService.logout(session);
         return ResponseEntity.ok("Logged out successfully");
-    }
-
-    @PostMapping("/register-client")
-    public ResponseEntity<String> registerClient(@RequestBody ClientRegisterRequest dto, HttpSession session) {
-
-        authService.registerClient(dto, session);
-        return ResponseEntity.ok("Client registered successfully");
     }
 }

@@ -1,6 +1,5 @@
 package com.smartshop.service;
 
-import com.smartshop.dto.request.ClientRegisterRequest;
 import com.smartshop.dto.request.LoginRequest;
 import com.smartshop.entity.User;
 import com.smartshop.entity.enums.CustomerTier;
@@ -37,39 +36,4 @@ public class AuthService {
         session.invalidate();
     }
 
-    public void registerClient(ClientRegisterRequest dto, HttpSession session) {
-
-        User current = (User) session.getAttribute("user");
-
-        if (current == null) {
-            throw new UnauthorizedException("Must login first");
-        }
-
-        if (current.getUserRole() != UserRole.ADMIN) {
-            throw new ForbiddenException("Only admin can register a client");
-        }
-
-        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new ValidationException("Username already exists");
-        }
-
-        User newUser = User.builder()
-                .username(dto.getUsername())
-                .password(dto.getPassword())
-                .userRole(UserRole.CLIENT)
-                .build();
-
-        userRepository.save(newUser);
-
-        Client client = Client.builder()
-                .nom_complet(dto.getNom())
-                .email(dto.getEmail())
-                .tier(CustomerTier.BASIC)
-                .totalOrders(0)
-                .totalSpent(BigDecimal.ZERO)
-                .user(newUser)
-                .build();
-
-        clientRepository.save(client);
-    }
 }
