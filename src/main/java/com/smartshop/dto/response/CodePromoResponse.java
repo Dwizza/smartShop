@@ -6,17 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class CodePromoResponse {
-
     private Long id;
     private String code;
-    private BigDecimal pourcentage; // 0.0 .. 1.0
-    private Boolean usageUnique;
-    private Boolean used;
+    private Integer discount;
+    private Boolean active;
+    private LocalDate expirationDate;
 }
 

@@ -1,29 +1,31 @@
 package com.smartshop.dto.request;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CodePromoRequest {
 
-    @NotBlank(message = "Le code promo est obligatoire.")
+    @NotBlank
     private String code;
 
-    @NotNull(message = "Le pourcentage de remise est obligatoire.")
-    @DecimalMin(value = "0.0", message = "Le pourcentage ne peut être négatif.")
-    @DecimalMax(value = "1.0", message = "Le pourcentage ne peut dépasser 100% (1.0).")
-    private BigDecimal pourcentage;
+    @NotNull
+    @Min(1)
+    @Max(90)
+    private Integer discount;
 
-    @NotNull(message = "Le statut de validité est obligatoire.")
-    private Boolean usageUnique;
+    @NotNull
+    private Boolean active;
 
-    @NotNull(message = "Le statut d'utilisation est obligatoire.")
-    private Boolean used;
+    @NotNull
+    private LocalDate expirationDate;
 }
 
