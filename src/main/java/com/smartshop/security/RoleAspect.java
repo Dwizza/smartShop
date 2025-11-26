@@ -17,29 +17,28 @@ public class RoleAspect {
 
     private final HttpSession session;
 
-
-
-    private User getLogged() {
+    @Before("execution(* com.smartshop.controller..admin*(..))")
+    public void adminOnly() {
         User user = (User) session.getAttribute("user");
         if (user == null)
-            throw new UnauthorizedException("You must login first");
-        return user;
-    }
-
-    private void requireAdmin() {
-        User user = getLogged();
+            throw new UnauthorizedException("Login required");
         if (user.getUserRole() != UserRole.ADMIN)
             throw new ForbiddenException("Admin only");
     }
 
-    private void requireClient() {
-        User user = getLogged();
+    @Before("execution(* com.smartshop.controller..client*(..))")
+    public void clientOnly() {
+        User user = (User) session.getAttribute("user");
+        if (user == null)
+            throw new UnauthorizedException("Login required");
         if (user.getUserRole() != UserRole.CLIENT)
             throw new ForbiddenException("Client only");
     }
 
-    private void requireLogin() {
-        getLogged();
+    @Before("execution(* com.smartshop.controller..auth*(..))")
+    public void authenticatedOnly() {
+        User user = (User) session.getAttribute("user");
+        if (user == null)
+            throw new UnauthorizedException("Login required");
     }
 }
-
