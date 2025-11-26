@@ -5,6 +5,8 @@ import com.smartshop.dto.response.ProductResponse;
 import com.smartshop.entity.Product;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
 
@@ -13,6 +15,9 @@ public interface ProductMapper {
 
     ProductResponse toResponse(Product entity);
 
+    List<ProductResponse> toResponseList(List<Product> entities);
+
     @Mapping(target = "id", ignore = true)
     void updateEntity(@MappingTarget Product entity, ProductRequest request);
+
 }

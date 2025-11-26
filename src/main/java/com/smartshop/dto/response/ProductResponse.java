@@ -15,6 +15,7 @@ public class ProductResponse {
 
     private Long id;
     private String nom;
+    private String sku;
     private BigDecimal prixUnitaire;
     private Integer stockDisponible;
     private Boolean isDeleted;

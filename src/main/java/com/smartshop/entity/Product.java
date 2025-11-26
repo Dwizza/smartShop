@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -24,6 +23,9 @@ public class Product {
 
     @NotBlank(message = "Le nom du produit est obligatoire.")
     private String nom;
+
+    @NotBlank(message = "Le SKU du produit est obligatoire.")
+    private String sku;
 
     @NotNull(message = "Le prix unitaire est obligatoire.")
     @DecimalMin(value = "0.0", inclusive = false, message = "Le prix doit être strictement positif.")
