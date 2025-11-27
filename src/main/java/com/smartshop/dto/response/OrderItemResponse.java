@@ -9,15 +9,12 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class OrderItemResponse {
-
-    private Long id;
     private Long productId;
-    private String productNom;
-    private Integer quantite;
-    private BigDecimal totalLigne;
-    private Long commandeId;
+    private String productName;
+    private Integer quantity;
+    private BigDecimal unitPrice;
+    private BigDecimal totalPrice;
 }
+
 

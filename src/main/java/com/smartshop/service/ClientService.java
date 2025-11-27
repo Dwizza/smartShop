@@ -6,13 +6,11 @@ import com.smartshop.entity.Client;
 import com.smartshop.entity.User;
 import com.smartshop.entity.enums.CustomerTier;
 import com.smartshop.entity.enums.UserRole;
-import com.smartshop.exception.ForbiddenException;
 import com.smartshop.exception.ResourceNotFoundException;
-import com.smartshop.exception.UnauthorizedException;
 import com.smartshop.exception.ValidationException;
+import com.smartshop.mapper.ClientMapper;
 import com.smartshop.repository.ClientRepository;
 import com.smartshop.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +23,7 @@ public class ClientService {
 
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
     public ClientResponse adminCreateClient(ClientRequest dto) {
 
@@ -49,7 +48,7 @@ public class ClientService {
                 .build();
         clientRepository.save(client);
 
-        return toResponse(client, user);
+        return clientMapper.toResponse(client);
     }
 
 
@@ -68,7 +67,7 @@ public class ClientService {
         client.setEmail(dto.getEmail());
         clientRepository.save(client);
 
-        return toResponse(client, user);
+        return clientMapper.toResponse(client);
     }
 
 
@@ -84,26 +83,28 @@ public class ClientService {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
-        return toResponse(client, client.getUser());
+        return clientMapper.toResponse(client);
     }
 
     public List<ClientResponse> adminListClients() {
         return clientRepository.findAll()
                 .stream()
-                .map(c -> toResponse(c, c.getUser()))
+                .map(c -> clientMapper.toResponse(c))
                 .toList();
     }
 
-    private ClientResponse toResponse(Client client, User user) {
-        return ClientResponse.builder()
-                .id(client.getId())
-                .username(user.getUsername())
-                .nom(client.getNom_complet())
-                .email(client.getEmail())
-                .niveau(client.getTier())
-                .totalOrders(client.getTotalOrders())
-                .totalSpent(client.getTotalSpent())
-                .build();
+    public BigDecimal calculateFidelityDiscount(Client client, BigDecimal sousTotal) {
+
+        if (client.getTier() == CustomerTier.SILVER) {
+            return sousTotal.multiply(BigDecimal.valueOf(0.05));
+        }
+
+        if (client.getTier() == CustomerTier.GOLD) {
+            return sousTotal.multiply(BigDecimal.valueOf(0.10));
+        }
+
+        return BigDecimal.ZERO;
     }
+
 }
 
