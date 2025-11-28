@@ -12,11 +12,7 @@ public interface PaymentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "commande", source = "commande")
-    @Mapping(target = "numeroPaiement", source = "request.numeroPaiement")
     @Mapping(target = "montant", source = "request.montant")
-    @Mapping(target = "datePaiement", expression = "java(request.getDatePaiement() != null ? request.getDatePaiement() : java.time.LocalDateTime.now())")
-    @Mapping(target = "dateEncaissement", source = "request.dateEncaissement")
-    @Mapping(target = "statut", expression = "java(request.getStatut() != null ? request.getStatut() : PaymentStatus.PENDING)")
     @Mapping(target = "methode", source = "request.methode")
     Payment toEntity(PaymentRequest request, Commande commande);
 

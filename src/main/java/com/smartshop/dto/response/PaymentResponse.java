@@ -16,16 +16,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PaymentResponse {
 
-    private Long id; // même que commandeId via MapsId
+    private Long id;
     private Long commandeId;
 
     private Integer numeroPaiement;
     private BigDecimal montant;
 
     private LocalDateTime datePaiement;
-    private LocalDateTime dateEncaissement; // nullable
+    private LocalDateTime dateEncaissement;
 
-    private PaymentStatus statut;
+    private PaymentStatus paymentStatus;
     private PaymentMethod methode;
 }
 
