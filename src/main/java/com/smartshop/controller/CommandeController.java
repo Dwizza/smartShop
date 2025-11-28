@@ -25,22 +25,10 @@ public class CommandeController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<CommandeResponse> adminGetCommandeById(@PathVariable Long id) {
-//        return ResponseEntity.ok(commandeService.adminGetCommandeById(id));
-//    }
+    @PatchMapping("/{id}/confirm")
+    public CommandeResponse confirmCommande(@PathVariable Long id) {
+        return commandeService.adminConfirmCommande(id);
+    }
 
-//    @GetMapping("/all")
-//    public ResponseEntity<List<CommandeResponse>> adminGetAllCommandes() {
-//        return ResponseEntity.ok(commandeService.adminGetAllCommandes());
-//    }
-
-//    @PutMapping("/{id}/status")
-//    public ResponseEntity<CommandeResponse> adminUpdateStatus(
-//            @PathVariable Long id,
-//            @RequestParam OrderStatus statut) {
-//
-//        return ResponseEntity.ok(commandeService.adminUpdateStatus(id, statut));
-//    }
 }
 

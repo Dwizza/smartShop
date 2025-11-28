@@ -4,21 +4,21 @@ import com.smartshop.entity.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "commande")
+@Builder
+@Entity
+@Table(name = "commandes")
+@ToString(exclude = {"client", "orderItems", "payments"})
 public class Commande {
 
     @Id
@@ -46,7 +46,7 @@ public class Commande {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Le statut de commande est obligatoire.")
-    private OrderStatus statut;
+    private OrderStatus orderStatus;
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
@@ -60,7 +60,6 @@ public class Commande {
     @JoinColumn(name = "code_promo_id")
     private CodePromo codePromo;
 
-    @OneToOne(mappedBy = "commande", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private Payment paiement;
+    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
+    private List<Payment> payment = new ArrayList<>();
 }

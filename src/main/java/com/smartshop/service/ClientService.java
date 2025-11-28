@@ -95,15 +95,37 @@ public class ClientService {
 
     public BigDecimal calculateFidelityDiscount(Client client, BigDecimal sousTotal) {
 
-        if (client.getTier() == CustomerTier.SILVER) {
+        if (client.getTier() == CustomerTier.SILVER && client.getTotalSpent().compareTo(BigDecimal.valueOf(500)) >= 0) {
             return sousTotal.multiply(BigDecimal.valueOf(0.05));
         }
 
-        if (client.getTier() == CustomerTier.GOLD) {
+        if (client.getTier() == CustomerTier.GOLD && client.getTotalSpent().compareTo(BigDecimal.valueOf(800)) >= 0) {
             return sousTotal.multiply(BigDecimal.valueOf(0.10));
         }
 
+        if (client.getTier() == CustomerTier.PLATINUM && client.getTotalSpent().compareTo(BigDecimal.valueOf(1000)) >= 0) {
+            return sousTotal.multiply(BigDecimal.valueOf(0.15));
+        }
+
         return BigDecimal.ZERO;
+    }
+
+    public ClientResponse UpdateTier(Long id, BigDecimal totalSpent, int totalOrders) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+
+        if (totalSpent.compareTo(BigDecimal.valueOf(1000)) >= 0 || totalOrders >= 20) {
+            client.setTier(CustomerTier.PLATINUM);
+        } else if (totalSpent.compareTo(BigDecimal.valueOf(800)) >= 0 || totalOrders >= 10) {
+            client.setTier(CustomerTier.GOLD);
+        } else if (totalSpent.compareTo(BigDecimal.valueOf(500)) >= 0 || totalOrders >= 3) {
+            client.setTier(CustomerTier.SILVER);
+        } else {
+            client.setTier(CustomerTier.BASIC);
+        }
+        clientRepository.save(client);
+
+        return clientMapper.toResponse(client);
     }
 
 }

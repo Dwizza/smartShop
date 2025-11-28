@@ -12,6 +12,7 @@ import com.smartshop.repository.ClientRepository;
 import com.smartshop.repository.CodePromoRepository;
 import com.smartshop.repository.CommandeRepository;
 import com.smartshop.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,11 +48,12 @@ public class CommandeService {
             sousTotal = sousTotal.add(item.getTotalLigne());
         }
 
+
         BigDecimal remiseFidelite = clientService.calculateFidelityDiscount(client, sousTotal);
 
-        BigDecimal remisePromo = applyPromo(request.getCodePromoId(), sousTotal);
+        BigDecimal remiseCodePromo = applyPromo(request.getCodePromoId(), sousTotal);
 
-        BigDecimal totalHT = sousTotal.subtract(remiseFidelite).subtract(remisePromo);
+        BigDecimal totalHT = sousTotal.subtract(remiseFidelite).subtract(remiseCodePromo);
 
         BigDecimal TVA = totalHT.multiply(BigDecimal.valueOf(0.20));
         BigDecimal totalTTC = totalHT.add(TVA);
@@ -63,7 +65,7 @@ public class CommandeService {
                 .TVA(TVA)
                 .totalRestant(totalTTC)
                 .montantRestant(totalTTC)
-                .statut(OrderStatus.PENDING)
+                .orderStatus(OrderStatus.PENDING)
                 .build();
 
         for (OrderItem item : items) {
@@ -96,7 +98,6 @@ public class CommandeService {
             throw new ValidationException("Promo code expired");
         }
 
-        // remise = sousTotal * (discount / 100)
         BigDecimal discountRate = BigDecimal.valueOf(promo.getDiscount())
                 .divide(BigDecimal.valueOf(100));
 
@@ -118,6 +119,39 @@ public class CommandeService {
             productRepository.save(p);
         }
     }
+
+    @Transactional
+    public CommandeResponse adminConfirmCommande(Long commandeId) {
+
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande not found"));
+
+        if (commande.getOrderStatus() != OrderStatus.PENDING) {
+            throw new ValidationException("Cette commande ne peut plus être modifiée.");
+        }
+
+        if (commande.getMontantRestant().compareTo(BigDecimal.ZERO) > 0) {
+            throw new ValidationException("La commande n'est pas totalement payée.");
+        }
+
+        commande.setOrderStatus(OrderStatus.CONFIRMED);
+
+        Client client = commande.getClient();
+
+        client.setTotalOrders(client.getTotalOrders() + 1);
+
+        BigDecimal newTotalSpent = client.getTotalSpent()
+                .add(commande.getTotalRestant());
+        client.setTotalSpent(newTotalSpent);
+
+        clientService.UpdateTier(client.getId(), client.getTotalSpent(), client.getTotalOrders());
+
+        commandeRepository.save(commande);
+        clientRepository.save(client);
+
+        return commandeMapper.toResponse(commande);
+    }
+
 
 
 }

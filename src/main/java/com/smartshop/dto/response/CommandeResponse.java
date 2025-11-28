@@ -19,7 +19,7 @@ public class CommandeResponse {
     private BigDecimal TVA;
     private BigDecimal totalRestant;
     private BigDecimal montantRestant;
-    private OrderStatus statut;
+    private OrderStatus orderStatus;
     private List<OrderItemResponse> items;
     private String promoCode;
     private Long clientId;
