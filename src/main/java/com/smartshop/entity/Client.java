@@ -3,19 +3,20 @@ package com.smartshop.entity;
 import com.smartshop.entity.enums.CustomerTier;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Entity
 @Table(name = "clients")
+@ToString(exclude = {"user", "commandes"})
 public class Client {
 
     @Id
@@ -48,5 +49,5 @@ public class Client {
     private User user;
 
     @OneToMany(mappedBy = "client")
-    private List<Commande> commandes;
+    private List<Commande> commandes = new ArrayList<>();
 }
