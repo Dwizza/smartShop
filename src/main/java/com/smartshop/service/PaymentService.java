@@ -12,6 +12,7 @@ import com.smartshop.repository.CommandeRepository;
 import com.smartshop.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.patterns.IfPointcut;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,20 +46,36 @@ public class PaymentService {
             throw new RuntimeException("Le montant dépasse le montant restant à payer");
         }
 
-        int n = paymentRepository.countByCommandeId(commande.getId()) + 1;
+        int n = paymentRepository.countByCommandeId(commande.getId());
+        List<Payment> paymentsExistants = paymentRepository.findPaymentsByCommandeAndMethode(commande, PaymentMethod.ESPESE);
 
-        BigDecimal nouveauReste = commande.getMontantRestant()
-                .subtract(request.getMontant());
-        commande.setMontantRestant(nouveauReste);
+        BigDecimal totalPaiementEspece = request.getMontant();
 
-        PaymentStatus status = PaymentStatus.PAID;
+        for(Payment p : paymentsExistants) {
+            totalPaiementEspece = totalPaiementEspece.add(p.getMontant());
+        }
+        if (totalPaiementEspece.compareTo(BigDecimal.valueOf(20000))>0 && request.getMethode() == PaymentMethod.ESPESE) {
+            throw new RuntimeException("Le montant total des paiements en espèces ne peut pas dépasser 20 000");
+        }
+
+        PaymentStatus status ;
+
+        if (request.getMethode() == PaymentMethod.ESPESE) {
+
+            commande.setMontantRestant(commande.getMontantRestant().subtract(request.getMontant()));
+
+            status = PaymentStatus.PAID;
+
+            commandeRepository.save(commande);
+        }else {
+            status = PaymentStatus.PENDING;
+        }
 
         LocalDateTime dateEncaissement = LocalDateTime.now();
 
-
         Payment payment = Payment.builder()
                 .commande(commande)
-                .numeroPaiement(n)
+                .numeroPaiement(n + 1)
                 .montant(request.getMontant())
                 .datePaiement(LocalDateTime.now())
                 .dateEncaissement(dateEncaissement)
@@ -66,8 +83,33 @@ public class PaymentService {
                 .methode(request.getMethode())
                 .build();
 
-        commandeRepository.save(commande);
         paymentRepository.save(payment);
+
+        return paymentMapper.toResponse(payment);
+    }
+
+    public PaymentResponse comfirmPayment(Long id) {
+
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        Commande commande = commandeRepository.findById(payment.getCommande().getId())
+                .orElseThrow(() -> new RuntimeException("Commande introuvable"));
+            System.out.println("commande.getMontantRestant() = " + commande.getMontantRestant());
+            System.out.println("payment.getMontant() = " + payment.getMontant());
+
+        if (payment.getPaymentStatus() == PaymentStatus.PENDING) {
+
+            commande.setMontantRestant(commande.getMontantRestant().subtract(payment.getMontant()));
+
+            payment.setPaymentStatus(PaymentStatus.PAID);
+            payment.setDateEncaissement(LocalDateTime.now());
+
+            commandeRepository.save(commande);
+            paymentRepository.save(payment);
+        }else {
+            throw new RuntimeException("Le paiement a déjà été confirmé");
+        }
 
         return paymentMapper.toResponse(payment);
     }

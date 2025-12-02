@@ -6,10 +6,7 @@ import com.smartshop.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -21,6 +18,11 @@ public class PaymentController {
     @PostMapping("/process")
     public ResponseEntity<PaymentResponse> adminProcessPayment(@Valid @RequestBody PaymentRequest request) {
         return ResponseEntity.ok(paymentService.processPayment(request));
+    }
+
+    @PatchMapping("/{id}/comfirm")
+    public ResponseEntity<PaymentResponse> adminComfirmPayment(@PathVariable Long id) {
+        return ResponseEntity.ok(paymentService.comfirmPayment(id));
     }
 
 }

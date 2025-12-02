@@ -22,9 +22,9 @@ public class OrderItemService {
         Product product = productRepository.findById(req.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        if (product.getStockDisponible() < req.getQuantity()) {
-            throw new ValidationException("Stock insuffisant pour: " + product.getNom());
-        }
+//        if (product.getStockDisponible() < req.getQuantity()) {
+//            throw new ValidationException("Stock insuffisant pour: " + product.getNom());
+//        }
 
         BigDecimal total = product.getPrixUnitaire()
                 .multiply(BigDecimal.valueOf(req.getQuantity()));
