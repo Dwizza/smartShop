@@ -21,13 +21,18 @@ public class CommandeController {
     public ResponseEntity<CommandeResponse> adminCreateCommande(
             @Valid @RequestBody CommandeRequest request) {
 
-        CommandeResponse response = commandeService.adminCreateCommande(request);
+        CommandeResponse response = commandeService.CreateCommande(request);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/confirm")
-    public CommandeResponse confirmCommande(@PathVariable Long id) {
+    public CommandeResponse adminConfirmCommande(@PathVariable Long id) {
         return commandeService.adminConfirmCommande(id);
+    }
+
+    @PatchMapping("{id}/cancel")
+    public ResponseEntity<CommandeResponse> adminCancelCommande(@PathVariable Long id) {
+        return ResponseEntity.ok(commandeService.CancelCommande(id));
     }
 
 }

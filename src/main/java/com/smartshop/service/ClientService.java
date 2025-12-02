@@ -86,6 +86,8 @@ public class ClientService {
         return clientMapper.toResponse(client);
     }
 
+
+
     public List<ClientResponse> adminListClients() {
         return clientRepository.findAll()
                 .stream()
@@ -95,30 +97,30 @@ public class ClientService {
 
     public BigDecimal calculateFidelityDiscount(Client client, BigDecimal sousTotal) {
 
-        if (client.getTier() == CustomerTier.SILVER && client.getTotalSpent().compareTo(BigDecimal.valueOf(500)) >= 0) {
+        if (client.getTier() == CustomerTier.SILVER && sousTotal.compareTo(BigDecimal.valueOf(500)) >= 0) {
             return sousTotal.multiply(BigDecimal.valueOf(0.05));
         }
 
-        if (client.getTier() == CustomerTier.GOLD && client.getTotalSpent().compareTo(BigDecimal.valueOf(800)) >= 0) {
+        if (client.getTier() == CustomerTier.GOLD && sousTotal.compareTo(BigDecimal.valueOf(800)) >= 0) {
             return sousTotal.multiply(BigDecimal.valueOf(0.10));
         }
 
-        if (client.getTier() == CustomerTier.PLATINUM && client.getTotalSpent().compareTo(BigDecimal.valueOf(1000)) >= 0) {
+        if (client.getTier() == CustomerTier.PLATINUM && sousTotal.compareTo(BigDecimal.valueOf(1000)) >= 0) {
             return sousTotal.multiply(BigDecimal.valueOf(0.15));
         }
 
         return BigDecimal.ZERO;
     }
 
-    public ClientResponse UpdateTier(Long id, BigDecimal totalSpent, int totalOrders) {
-        Client client = clientRepository.findById(id)
+    public ClientResponse UpdateTier(Client c) {
+        Client client = clientRepository.findById(c.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
-        if (totalSpent.compareTo(BigDecimal.valueOf(1000)) >= 0 || totalOrders >= 20) {
+        if (c.getTotalSpent().compareTo(BigDecimal.valueOf(1000)) >= 0 || c.getTotalOrders() >= 20) {
             client.setTier(CustomerTier.PLATINUM);
-        } else if (totalSpent.compareTo(BigDecimal.valueOf(800)) >= 0 || totalOrders >= 10) {
+        } else if (c.getTotalSpent().compareTo(BigDecimal.valueOf(800)) >= 0 || c.getTotalOrders() >= 10) {
             client.setTier(CustomerTier.GOLD);
-        } else if (totalSpent.compareTo(BigDecimal.valueOf(500)) >= 0 || totalOrders >= 3) {
+        } else if (c.getTotalSpent().compareTo(BigDecimal.valueOf(500)) >= 0 || c.getTotalOrders() >= 3) {
             client.setTier(CustomerTier.SILVER);
         } else {
             client.setTier(CustomerTier.BASIC);

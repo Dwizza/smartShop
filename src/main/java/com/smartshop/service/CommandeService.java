@@ -12,7 +12,7 @@ import com.smartshop.repository.ClientRepository;
 import com.smartshop.repository.CodePromoRepository;
 import com.smartshop.repository.CommandeRepository;
 import com.smartshop.repository.ProductRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,8 @@ public class CommandeService {
     private final OrderItemService orderItemService;
     private final ClientService clientService;
 
-    public CommandeResponse adminCreateCommande(CommandeRequest request) {
+    @Transactional(noRollbackFor = ValidationException.class)
+    public CommandeResponse CreateCommande(CommandeRequest request) {
 
         Client client = clientRepository.findById(request.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
@@ -47,7 +48,6 @@ public class CommandeService {
             items.add(item);
             sousTotal = sousTotal.add(item.getTotalLigne());
         }
-
 
         BigDecimal remiseFidelite = clientService.calculateFidelityDiscount(client, sousTotal);
 
@@ -72,6 +72,20 @@ public class CommandeService {
             item.setCommande(commande);
         }
         commande.setOrderItems(items);
+
+        if (checkStock(items)) {
+            commande.setMontantRestant(BigDecimal.ZERO);
+            commande.setSousTotal(BigDecimal.ZERO);
+            commande.setTotalRestant(BigDecimal.ZERO);
+            commande.setClient(client);
+            commande.setTVA(BigDecimal.ZERO);
+            commande.setDate(LocalDateTime.now());
+            commande.setOrderStatus(OrderStatus.REJECTED);
+
+            commandeRepository.save(commande);
+
+            throw new ValidationException("Stock insuffisant pour un ou plusieurs produits.");
+        }
 
         updateStock(items);
 
@@ -104,18 +118,20 @@ public class CommandeService {
         return sousTotal.multiply(discountRate);
     }
 
+    private boolean checkStock(List<OrderItem> items) {
+        for (OrderItem item : items) {
+            if (item.getQuantite() > item.getProduct().getStockDisponible()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void updateStock(List<OrderItem> items) {
-
         for (OrderItem item : items) {
             Product p = item.getProduct();
-            int newStock = p.getStockDisponible() - item.getQuantite();
-
-            if (newStock < 0) {
-                throw new ValidationException("Stock insuffisant pour: " + p.getNom());
-            }
-
-            p.setStockDisponible(newStock);
+            p.setStockDisponible(p.getStockDisponible() - item.getQuantite());
             productRepository.save(p);
         }
     }
@@ -144,7 +160,7 @@ public class CommandeService {
                 .add(commande.getTotalRestant());
         client.setTotalSpent(newTotalSpent);
 
-        clientService.UpdateTier(client.getId(), client.getTotalSpent(), client.getTotalOrders());
+        clientService.UpdateTier(client);
 
         commandeRepository.save(commande);
         clientRepository.save(client);
@@ -152,7 +168,27 @@ public class CommandeService {
         return commandeMapper.toResponse(commande);
     }
 
+    public CommandeResponse CancelCommande(Long commandeId) {
 
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande not found"));
 
+        if (commande.getOrderStatus() != OrderStatus.PENDING) {
+            throw new ValidationException("Cette commande ne peut plus être annulée.");
+        }
+
+        commande.setOrderStatus(OrderStatus.CANCELED);
+
+        List<OrderItem> items = commande.getOrderItems();
+        for (OrderItem item : items) {
+            Product p = item.getProduct();
+            int newStock = p.getStockDisponible() + item.getQuantite();
+            p.setStockDisponible(newStock);
+            productRepository.save(p);
+        }
+
+        commandeRepository.save(commande);
+        return commandeMapper.toResponse(commande);
+
+    }
 }
-

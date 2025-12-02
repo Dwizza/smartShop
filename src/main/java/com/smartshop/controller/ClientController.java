@@ -3,6 +3,7 @@ package com.smartshop.controller;
 import com.smartshop.dto.request.ClientRequest;
 import com.smartshop.dto.response.ClientResponse;
 import com.smartshop.service.ClientService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
