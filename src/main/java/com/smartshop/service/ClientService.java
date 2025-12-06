@@ -1,8 +1,11 @@
 package com.smartshop.service;
 
 import com.smartshop.dto.request.ClientRequest;
+import com.smartshop.dto.response.ClientProfileResponse;
 import com.smartshop.dto.response.ClientResponse;
+import com.smartshop.dto.response.CommandeResponse;
 import com.smartshop.entity.Client;
+import com.smartshop.entity.Commande;
 import com.smartshop.entity.User;
 import com.smartshop.entity.enums.CustomerTier;
 import com.smartshop.entity.enums.UserRole;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,8 +90,6 @@ public class ClientService {
         return clientMapper.toResponse(client);
     }
 
-
-
     public List<ClientResponse> adminListClients() {
         return clientRepository.findAll()
                 .stream()
@@ -130,5 +132,12 @@ public class ClientService {
         return clientMapper.toResponse(client);
     }
 
+    public ClientProfileResponse getClientProfile(Client client) {
+
+        Client c = clientRepository.findById(client.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+
+        return clientMapper.toResponseProfile(c);
+    }
 }
 

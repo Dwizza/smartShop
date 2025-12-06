@@ -1,7 +1,9 @@
 package com.smartshop.controller;
 
 import com.smartshop.dto.request.ClientRequest;
+import com.smartshop.dto.response.ClientProfileResponse;
 import com.smartshop.dto.response.ClientResponse;
+import com.smartshop.entity.Client;
 import com.smartshop.service.ClientService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,12 @@ public class ClientController {
     @GetMapping("/list")
     public ResponseEntity<List<ClientResponse>> adminListClients() {
         return ResponseEntity.ok(clientService.adminListClients());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ClientProfileResponse> clientProfile(HttpSession session) {
+        Client client = (Client) session.getAttribute("client");
+        return ResponseEntity.ok(clientService.getClientProfile(client));
     }
 }
 

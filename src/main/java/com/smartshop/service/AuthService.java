@@ -5,6 +5,7 @@ import com.smartshop.entity.User;
 import com.smartshop.entity.enums.CustomerTier;
 import com.smartshop.entity.enums.UserRole;
 import com.smartshop.exception.ForbiddenException;
+import com.smartshop.exception.ResourceNotFoundException;
 import com.smartshop.exception.UnauthorizedException;
 import com.smartshop.exception.ValidationException;
 import com.smartshop.repository.ClientRepository;
@@ -25,11 +26,25 @@ public class AuthService {
     private final ClientRepository clientRepository;
 //    private final
 
-    public User login(LoginRequest dto) {
+    public String login(LoginRequest dto, HttpSession session) {
 
-        return userRepository.findByUsername(dto.getUsername())
-                .filter(u -> u.getPassword().equals(dto.getPassword()))
-                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+        User user = userRepository.findByUsername(dto.getUsername())
+                .orElseThrow(() -> new UnauthorizedException("Nom d'utilisateur ou mot de passe invalide"));
+
+        if (!user.getPassword().equals(dto.getPassword())) {
+            throw new UnauthorizedException("Nom d'utilisateur ou mot de passe invalide");
+        }
+
+        session.setAttribute("user", user);
+
+        if (user.getUserRole() == UserRole.CLIENT) {
+            Client client = clientRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé pour cet utilisateur"));
+
+            session.setAttribute("client", client);
+        }
+
+        return "Connexion réussie";
     }
 
     public void logout(HttpSession session) {

@@ -36,9 +36,5 @@ public class CodePromoController {
         return codePromoService.adminList();
     }
 
-    @GetMapping("/verify/{code}")
-    public CodePromoResponse adminVerify(@PathVariable String code) {
-        return codePromoService.adminVerify(code);
-    }
 }
 

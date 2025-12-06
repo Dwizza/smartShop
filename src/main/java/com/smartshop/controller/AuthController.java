@@ -1,7 +1,10 @@
 package com.smartshop.controller;
 
 import com.smartshop.dto.request.LoginRequest;
+import com.smartshop.entity.Client;
 import com.smartshop.entity.User;
+import com.smartshop.exception.ResourceNotFoundException;
+import com.smartshop.repository.ClientRepository;
 import com.smartshop.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +21,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> AuthLogin(@RequestBody LoginRequest dto, HttpSession session) {
 
-        User user = authService.login(dto);
-        session.setAttribute("user", user);
+        String message = authService.login(dto, session);
 
-        return ResponseEntity.ok("Logged in successfully");
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/logout")

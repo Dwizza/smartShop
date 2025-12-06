@@ -1,6 +1,7 @@
 package com.smartshop.mapper;
 
 import com.smartshop.dto.request.ClientRequest;
+import com.smartshop.dto.response.ClientProfileResponse;
 import com.smartshop.dto.response.ClientResponse;
 import com.smartshop.entity.Client;
 import com.smartshop.entity.User;
@@ -35,4 +36,12 @@ public interface ClientMapper {
     @Mapping(target = "totalOrders", ignore = true)
     @Mapping(target = "totalSpent", ignore = true)
     void updateEntity(@MappingTarget Client entity, ClientRequest request, User user);
+
+    @Mapping(target = "nom_complet", source = "nom_complet")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "tier", source = "tier")
+    @Mapping(target = "commandes", source = "commandes")
+    ClientProfileResponse toResponseProfile(Client client);
 }
+
+

@@ -9,8 +9,6 @@ import com.smartshop.mapper.CodePromoMapper;
 import com.smartshop.repository.CodePromoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -19,12 +17,15 @@ public class CodePromoService {
 
     private final CodePromoRepository codePromoRepository;
     private final CodePromoMapper codePromoMapper;
+    private final PromoCodeGenerator promoCodeGenerator;
 
     public CodePromoResponse adminCreate(CodePromoRequest dto) {
 
         if (codePromoRepository.findByCode(dto.getCode()).isPresent()) {
             throw new ValidationException("Code promo already exists");
         }
+
+        dto.setCode(promoCodeGenerator.generate());
 
         CodePromo promo = codePromoMapper.toEntity(dto);
 
@@ -59,18 +60,5 @@ public class CodePromoService {
                 .toList();
     }
 
-    public CodePromoResponse adminVerify(String code) {
-
-        CodePromo promo = codePromoRepository.findByCode(code)
-                .orElseThrow(() -> new ValidationException("Invalid promo code"));
-
-        if (!promo.getActive())
-            throw new ValidationException("Promo code disabled");
-
-        if (promo.getExpirationDate().isBefore(LocalDate.now()))
-            throw new ValidationException("Promo code expired");
-
-        return codePromoMapper.toResponse(promo);
-    }
 }
 

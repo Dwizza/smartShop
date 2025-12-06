@@ -47,14 +47,14 @@ public class PaymentService {
         }
 
         int n = paymentRepository.countByCommandeId(commande.getId());
-        List<Payment> paymentsExistants = paymentRepository.findPaymentsByCommandeAndMethode(commande, PaymentMethod.ESPESE);
+//        List<Payment> paymentsExistants = paymentRepository.findPaymentsByCommandeAndMethode(commande, PaymentMethod.ESPESE);
+//
+//        BigDecimal totalPaiementEspece = request.getMontant();
 
-        BigDecimal totalPaiementEspece = request.getMontant();
-
-        for(Payment p : paymentsExistants) {
-            totalPaiementEspece = totalPaiementEspece.add(p.getMontant());
-        }
-        if (totalPaiementEspece.compareTo(BigDecimal.valueOf(20000))>0 && request.getMethode() == PaymentMethod.ESPESE) {
+//        for(Payment p : paymentsExistants) {
+//            totalPaiementEspece = totalPaiementEspece.add(p.getMontant());
+//        }
+        if (request.getMontant().compareTo(BigDecimal.valueOf(20000))>0 && request.getMethode() == PaymentMethod.ESPESE) {
             throw new RuntimeException("Le montant total des paiements en espèces ne peut pas dépasser 20 000");
         }
 
