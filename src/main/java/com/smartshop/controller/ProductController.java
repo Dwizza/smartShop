@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductResponse>> authGetAllProducts(Pageable pageable,@RequestParam   String sku) {
+    public ResponseEntity<List<ProductResponse>> authGetAllProducts(Pageable pageable,@RequestParam  (defaultValue = "") String sku) {
         List<ProductResponse> products = productService.getAllProducts(pageable,sku);
         return ResponseEntity.ok(products);
     }
