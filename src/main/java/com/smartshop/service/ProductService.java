@@ -7,6 +7,7 @@ import com.smartshop.exception.ValidationException;
 import com.smartshop.mapper.ProductMapper;
 import com.smartshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,9 +35,16 @@ public class ProductService {
         return productMapper.toResponse(product);
     }
 
-    public List<ProductResponse> getAllProducts(){
-        List<Product> products = productRepository.findByIsDeletedFalse();
-        return productMapper.toResponseList(products);
+    public List<ProductResponse> getAllProducts(Pageable pageable, String sku){
+
+        if(pageable.getPageSize() > 50){
+            throw new ValidationException("Page size cannot be greater than 50");
+        }
+            List<Product> products = productRepository.findByIsDeletedFalseAndSkuContaining(sku,pageable);
+
+            System.out.println("products"+products);
+
+            return productMapper.toResponseList(products);
     }
 
     public ProductResponse updateProduct(Long id, ProductRequest productRequest) {

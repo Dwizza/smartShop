@@ -5,6 +5,8 @@ import com.smartshop.dto.response.ProductResponse;
 import com.smartshop.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +31,8 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductResponse>> authGetAllProducts() {
-        List<ProductResponse> products = productService.getAllProducts();
+    public ResponseEntity<List<ProductResponse>> authGetAllProducts(Pageable pageable,@RequestParam   String sku) {
+        List<ProductResponse> products = productService.getAllProducts(pageable,sku);
         return ResponseEntity.ok(products);
     }
 
